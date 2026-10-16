@@ -1,24 +1,19 @@
-import "dotenv/config"
-
-import express from "express";
-
-
-const app = express()
-
-app.use(express.json())
+import app from "./app.js";
+import connectDB from "./config/dataBase.js";
 
 const PORT = process.env.PORT || 3001;
-const SERVICE_NAME = process.env.SERVICE_NAME
+const SERVICE_NAME = process.env.SERVICE_NAME || "user-service";
 
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`${SERVICE_NAME} is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+    process.exit(1);
+  }
+};
 
-app.get("/health",(req, res)=>{
-    res.status(200).json({
-    status: "ok",
-    service: SERVICE_NAME,
-    timestamp: new Date().toISOString()
-});
-})
-
-app.listen(PORT,()=>{
-    console.log(`${SERVICE_NAME} is running on port ${PORT}`)
-});
+startServer();

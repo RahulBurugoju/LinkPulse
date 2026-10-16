@@ -1,0 +1,35 @@
+import "dotenv/config"
+
+import express from "express";
+import mongoose from "mongoose";
+
+
+const app = express()
+
+app.use(express.json())
+
+const PORT = process.env.PORT || 3001;
+const SERVICE_NAME = process.env.SERVICE_NAME
+
+
+app.get("/health",(req, res)=>{
+    res.status(200).json({
+    status: "ok",
+    service: SERVICE_NAME,
+    timestamp: new Date().toISOString()
+});
+})
+
+app.get("/ready", (req, res) => {
+  const databaseReady = mongoose.connection.readyState === 1;
+
+  res.status(databaseReady ? 200 : 503).json({
+    status: databaseReady ? "ready" : "not_ready",
+    service: SERVICE_NAME,
+    dependencies: {
+      mongodb: databaseReady ? "connected" : "disconnected"
+    }
+  });
+});
+
+export default app
