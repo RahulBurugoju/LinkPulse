@@ -1,9 +1,46 @@
+import jwt from "jsonwebtoken";
 import { asyncHandler } from "../util/asyncHandler.js";
 import { ApiError } from "../util/ApiError.js";
-import Url from "../models/url.model.js";
-import jwt from "jsonwebtoken";
 
-const authenticate = asyncHandler(async(req,res,next)=>{
-    
-})
-  
+export const authenticate = asyncHandler(async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const accessToken = req.cookies?.accessToken || (authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null);
+
+    if (!accessToken) {
+        throw new ApiError(401, "Unauthorized request : access token required");
+    }
+
+    const secret = process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET;
+    if (!secret) {
+        console.error("JWT_SECRET is not configured");
+        throw new ApiError(500, "Internal server error");
+    }
+
+    let decodedToken;
+    try {
+        decodedToken = jwt.verify(accessToken, secret, {
+            issuer: process.env.JWT_ISSUER || "linkpulse-user-service",
+            audience: process.env.JWT_AUDIENCE || "linkpulse-api",
+        });
+    } catch {
+        throw new ApiError(401, "Invalid or expired token");
+    }
+
+    const userId = decodedToken?.sub || decodedToken?.userId;
+    if (!userId) {
+        throw new ApiError(401, "Invalid access token");
+    }
+
+    req.user = {
+        Id: userId,
+        id: userId,
+        sub: userId,
+        name: decodedToken?.name,
+        email: decodedToken?.email,
+    };
+
+    next();
+});
+
+export const authenticateToken = authenticate;
+export default authenticate;
