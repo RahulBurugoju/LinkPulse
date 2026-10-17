@@ -1,10 +1,11 @@
 import "dotenv/config"
-import authRouter from "./routes/auth.routes.js"
 
 import express from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import cors from "cors"
 
+import authRouter from "./routes/auth.routes.js"
 
 const app = express()
 

@@ -11,8 +11,7 @@ import {
 } from '../util/auth.util.js'
 
 
-const register = async ({ name, email, password }) => {
-    const normalizedEmail = email.toLowerCase().trim();
+const register = async ({ name, email, password }) => {   const normalizedEmail = email.toLowerCase().trim();
 
     const userExists = await User.findOne({ email: normalizedEmail });
 
