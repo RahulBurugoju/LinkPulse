@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors"
 
-// import authRouter from "./routes/auth.routes.js";
+import urlRouter from "./routes/utl.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
 
 const app = express();
@@ -40,7 +40,7 @@ app.get("/ready", (req, res) => {
     });
 });
 
-// app.use("/api/auth", authRouter);
+app.use("/api/v1/url", urlRouter);
 
 // Global Error Handler
 app.use(errorHandler);

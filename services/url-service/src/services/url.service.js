@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import Url from "../models/url.model.js";
 import { ApiError } from "../util/ApiError.js";
+import { deflate } from "node:zlib";
 
 
 
@@ -37,4 +38,4 @@ async function createShortUrl({ originalUrl, userId }) {
 
 
 
-export { createShortUrl };
+export default { createShortUrl };
