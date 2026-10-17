@@ -1,5 +1,6 @@
 import { asyncHandler } from "../util/asyncHandler.js";
 import { ApiResponse } from "../util/ApiResponse.js";
+import authServices from "../services/auth.service.js"
 
 const registerController = asyncHandler(async (req, res) => {
 

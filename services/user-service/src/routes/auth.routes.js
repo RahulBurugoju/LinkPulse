@@ -1,5 +1,5 @@
 import express from "express";
-
+import { registerController, loginController, logoutController, getMeController, refreshTokensController } from "../controllers/auth.controller.js";
 
 
 const router = express.Router();
@@ -11,7 +11,10 @@ router.route("/health").get((req, res) => {
         status: 200
     })
 })
-// router.route("/register").post();
-// router.route("/login").post();
+router.route("/register").post(registerController);
+router.route("/login").post(loginController);
+router.route("/logout").post(logoutController);
+router.route("/me").get(getMeController);
+router.route("/refresh-token").post(refreshTokensController);
 
 export default router;
