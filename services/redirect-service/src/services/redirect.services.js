@@ -1,23 +1,20 @@
 import RedirectUrl from "../models/redirectUrl.model.js";
 import { ApiError } from "../util/ApiError.js";
 
+/**
+ * Looks up the original URL for a given shortCode.
+ * Throws ApiError on validation failure, not-found, or DB error.
+ */
 const getOriginalUrl = async (shortCode) => {
-    if (!shortCode?.trim()) {
-        throw new ApiError(400, "Short code is required");
+    const url = await RedirectUrl.findOne({ shortCode })
+        .select("originalUrl")
+        .lean();
+
+    if (!url) {
+        throw new ApiError(404, "Short URL not found");
     }
 
-    try {
-        const url = await RedirectUrl.findOne({ shortCode })
-            .select("originalUrl")
-            .lean();
-        if (!url) {
-            throw new ApiError(404, "Url Not Found");
-        }
-        return url;
-    } catch (error) {
-        if (error?.statusCode === 404) throw error;
-        throw new ApiError(500, "Internal Server Error");
-    }
-}
+    return url.originalUrl;
+};
 
 export default { getOriginalUrl };

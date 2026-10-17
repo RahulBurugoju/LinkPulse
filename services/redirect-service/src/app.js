@@ -40,7 +40,7 @@ app.get("/ready", (req, res) => {
     });
 });
 
-app.use("/api/v1/redirect", redirectRouter);
+app.use("/", redirectRouter);
 
 // Global Error Handler
 // app.use(errorHandler);

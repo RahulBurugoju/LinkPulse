@@ -1,10 +1,8 @@
 import { Router } from "express"
+import { redirectToOriginalUrl } from "../controllers/redirect.controller.js";
 
 const router = Router();
 
-// router.route("/:shortCode").get(handleRedirect);
-router.route("/shortCode").get((req, res) => {
-    res.send("Hello World Redirected Service is live");
-});
+router.route("/:shortCode").get(redirectToOriginalUrl);
 
-export default router
+export default router;
