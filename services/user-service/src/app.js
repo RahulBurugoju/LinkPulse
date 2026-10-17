@@ -5,18 +5,19 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors"
 
-import authRouter from "./routes/auth.routes.js"
+import authRouter from "./routes/auth.routes.js";
+import errorHandler from "./middlewares/error.middleware.js";
 
-const app = express()
+const app = express();
 
-app.use(cors())
-app.use(cookieParser())
-app.use(express.json())
+app.use(cors());
+app.use(cookieParser());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3001;
-const SERVICE_NAME = process.env.SERVICE_NAME
+const SERVICE_NAME = process.env.SERVICE_NAME;
 
 
 app.get("/health", (req, res) => {
@@ -25,7 +26,7 @@ app.get("/health", (req, res) => {
         service: SERVICE_NAME,
         timestamp: new Date().toISOString()
     });
-})
+});
 
 app.get("/ready", (req, res) => {
     const databaseReady = mongoose.connection.readyState === 1;
@@ -41,4 +42,7 @@ app.get("/ready", (req, res) => {
 
 app.use("/api/auth", authRouter);
 
-export default app
+// Global Error Handler
+app.use(errorHandler);
+
+export default app;
