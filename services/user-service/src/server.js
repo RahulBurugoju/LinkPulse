@@ -1,5 +1,5 @@
 import app from "./app.js";
-import connectDB from "./config/dataBase.js";
+import connectDB from "./config/db.js";
 
 const PORT = process.env.PORT || 3001;
 const SERVICE_NAME = process.env.SERVICE_NAME || "user-service";
