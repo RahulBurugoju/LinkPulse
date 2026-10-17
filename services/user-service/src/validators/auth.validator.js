@@ -1,65 +1,34 @@
 import { z } from "zod";
 
-const registerSchema = z.object({
+export const registerSchema = z.object({
     name: z
-        .string({ message: "Name is required" })
+        .string()
         .trim()
         .min(2, "Name must be at least 2 characters")
-        .max(80, "Name must not exceed 80 characters"),
+        .max(50, "Name must not exceed 50 characters"),
 
     email: z
-        .string({ message: "Email is required" })
+        .string()
         .trim()
-        .toLowerCase()
-        .email("Invalid email address"),
+        .email("Please provide a valid email"),
 
     password: z
-        .string({ message: "Password is required" })
-        .min(8, "Password must be at least 8 characters long")
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .max(128, "Password must not exceed 128 characters")
         .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-        .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[0-9]/, "Password must contain at least one digit")
+        .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
 });
 
-
-const loginSchema = z.object({
+export const loginSchema = z.object({
     email: z
-        .string({ message: "Email is required" })
+        .string()
         .trim()
-        .toLowerCase()
-        .email("Invalid email address"),
+        .email("Please provide a valid email"),
 
     password: z
-        .string({ message: "Password is required" })
+        .string()
         .min(1, "Password is required"),
 });
-
-/**
- * Higher-order middleware to validate request body against a Zod schema.
- */
-const validate = (schema) => (req, res, next) => {
-    const result = schema.safeParse(req.body);
-
-    if (!result.success) {
-        return res.status(400).json({
-            error: "Validation failed",
-            details: result.error.issues.map((issue) => ({
-                field: issue.path.join("."),
-                message: issue.message,
-            })),
-        });
-    }
-
-    req.body = result.data;
-    next();
-};
-
-const validateRegister = validate(registerSchema);
-const validateLogin = validate(loginSchema);
-
-export {
-    registerSchema,
-    loginSchema,
-    validate,
-    validateRegister,
-    validateLogin,
-};
