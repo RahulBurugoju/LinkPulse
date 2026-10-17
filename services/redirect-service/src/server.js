@@ -1,24 +1,19 @@
-import "dotenv/config"
+import app from "./app.js";
+import connectDB from "./config/db.js";
 
-import express from "express";
+const PORT = process.env.PORT || 3003;
+const SERVICE_NAME = process.env.SERVICE_NAME || "redirect-service";
 
+const startServer = async () => {
+    try {
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log(`${SERVICE_NAME} is running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error("Failed to start server:", error.message);
+        process.exit(1);
+    }
+};
 
-const app = express()
-
-app.use(express.json())
-
-const PORT = process.env.PORT || 3001;
-const SERVICE_NAME = process.env.SERVICE_NAME
-
-
-app.get("/health",(req, res)=>{
-    res.status(200).json({
-    status: "ok",
-    service: SERVICE_NAME,
-    timestamp: new Date().toISOString()
-});
-})
-
-app.listen(PORT,()=>{
-    console.log(`${SERVICE_NAME} is running on port ${PORT}`)
-});
+startServer();
