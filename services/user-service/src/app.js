@@ -1,4 +1,5 @@
 import "dotenv/config"
+import authRouter from "./routes/auth.routes.js"
 
 import express from "express";
 import mongoose from "mongoose";
@@ -12,24 +13,26 @@ const PORT = process.env.PORT || 3001;
 const SERVICE_NAME = process.env.SERVICE_NAME
 
 
-app.get("/health",(req, res)=>{
+app.get("/health", (req, res) => {
     res.status(200).json({
-    status: "ok",
-    service: SERVICE_NAME,
-    timestamp: new Date().toISOString()
-});
+        status: "ok",
+        service: SERVICE_NAME,
+        timestamp: new Date().toISOString()
+    });
 })
 
 app.get("/ready", (req, res) => {
-  const databaseReady = mongoose.connection.readyState === 1;
+    const databaseReady = mongoose.connection.readyState === 1;
 
-  res.status(databaseReady ? 200 : 503).json({
-    status: databaseReady ? "ready" : "not_ready",
-    service: SERVICE_NAME,
-    dependencies: {
-      mongodb: databaseReady ? "connected" : "disconnected"
-    }
-  });
+    res.status(databaseReady ? 200 : 503).json({
+        status: databaseReady ? "ready" : "not_ready",
+        service: SERVICE_NAME,
+        dependencies: {
+            mongodb: databaseReady ? "connected" : "disconnected"
+        }
+    });
 });
+
+app.use("/api/auth", authRouter);
 
 export default app
