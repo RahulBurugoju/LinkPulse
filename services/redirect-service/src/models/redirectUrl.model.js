@@ -14,4 +14,5 @@ const redirectUrlSchema = new mongoose.Schema(
 redirectUrlSchema.index({ shortCode: 1 });
 
 const RedirectUrl = mongoose.model("RedirectUrl", redirectUrlSchema);
+
 export default RedirectUrl;

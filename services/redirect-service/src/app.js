@@ -5,8 +5,8 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors"
 
-// import urlRouter from "./routes/utl.routes.js";
-import errorHandler from "./middlewares/error.middleware.js";
+import redirectRouter from "./routes/redirect.routes.js";
+// import errorHandler from "./middlewares/error.middleware.js";
 
 const app = express();
 
@@ -40,7 +40,7 @@ app.get("/ready", (req, res) => {
     });
 });
 
-// app.use("/api/v1/url", urlRouter);
+app.use("/api/v1/redirect", redirectRouter);
 
 // Global Error Handler
 // app.use(errorHandler);
