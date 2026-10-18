@@ -5,7 +5,7 @@ const redisClient = createClient({
 })
 
 redisClient.on("error",(err)=>{
-    console.error("Redis error : ",err.message)
+    console.error("Redis error this is the error : ",err)
 })
 
 redisClient.on("connect",()=>{

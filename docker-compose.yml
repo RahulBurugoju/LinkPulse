@@ -45,10 +45,9 @@ volumes:
   redis_data:
   kafka_data:
 
-
-# Why these choices?
-# - MongoDB stores user accounts and URL records.
-# - Redis will cache short-code lookups so redirects can avoid repeated database queries.
-# - Kafka runs in single-node KRaft mode, so we don't need a separate ZooKeeper container.
-# - Named volumes preserve local development data when containers are recreated.
+    # Why these choices?
+    # - MongoDB stores user accounts and URL records.
+    # - Redis will cache short-code lookups so redirects can avoid repeated database queries.
+    # - Kafka runs in single-node KRaft mode, so we don't need a separate ZooKeeper container.
+    # - Named volumes preserve local development data when containers are recreated.
 
