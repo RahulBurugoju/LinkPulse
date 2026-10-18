@@ -3,6 +3,7 @@ import { ApiResponse } from "../util/ApiResponse.js";
 import { ApiError } from "../util/ApiError.js";
 import redirectServices from "../services/redirect.services.js";
 import { redisClient } from "../config/redis.js";
+import publishClickEvent from "../config/kafka.js";
 
 const SHORT_CODE_REGEX = /^[a-zA-Z0-9]{8}$/;
 const CACHE_TTL_SECONDS = 60 * 60;
@@ -57,6 +58,12 @@ const redirectToOriginalUrl = asyncHandler(async (req, res) => {
             .json(new ApiResponse(500, null, "Stored destination URL is invalid"));
     }
 
+    publishClickEvent({
+        shortCode,
+        req,
+    }).catch((error) => {
+        console.error("Failed to publish click event:", error.message);
+    });
     return res.redirect(302, destination.toString());
 });
 
