@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors"
 
 import redirectRouter from "./routes/redirect.routes.js";
-// import errorHandler from "./middlewares/error.middleware.js";
+import errorHandler from "./middlewares/error.middleware.js";
 
 const app = express();
 
@@ -43,6 +43,6 @@ app.get("/ready", (req, res) => {
 app.use("/", redirectRouter);
 
 // Global Error Handler
-// app.use(errorHandler);
+app.use(errorHandler);
 
 export default app;
