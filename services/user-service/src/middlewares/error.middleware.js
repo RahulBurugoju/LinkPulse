@@ -1,4 +1,5 @@
 import { ApiError } from "../util/ApiError.js";
+import logger from "../config/logger.js";
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
@@ -53,8 +54,13 @@ const errorHandler = (err, req, res, next) => {
         });
     }
 
-    // Fallback for unexpected errors
-    console.error("Unhandled error:", err);
+    // Fallback for unexpected errors.
+    // Log only safe fields: some errors (e.g. body-parser failures) carry the
+    // raw request body, which may contain passwords or tokens.
+    (req.log || logger).error(
+        { err: { type: err.name, message: err.message, stack: err.stack } },
+        "Unhandled error"
+    );
 
     return res.status(500).json({
         success: false,
