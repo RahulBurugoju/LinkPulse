@@ -11,6 +11,45 @@ async function getUrlAnalytics(req, res) {
             });
         }
 
+        // Verify ownership with URL Service
+        const urlServiceUrl = process.env.URL_SERVICE_URL || "http://localhost:3002";
+        let ownershipRes;
+        try {
+            ownershipRes = await fetch(`${urlServiceUrl}/api/urls/ownership/${shortCode}`, {
+                method: "GET",
+                headers: {
+                    Authorization: req.headers.authorization,
+                },
+                signal: AbortSignal.timeout(3000),
+            });
+        } catch (err) {
+            console.error("URL Service unavailable:", err.message);
+            return res.status(503).json({
+                success: false,
+                message: "URL Service unavailable",
+            });
+        }
+
+        if (ownershipRes.status === 404) {
+            return res.status(404).json({
+                success: false,
+                message: "URL not found",
+            });
+        }
+
+        if (!ownershipRes.ok) {
+            if (ownershipRes.status >= 500) {
+                return res.status(503).json({
+                    success: false,
+                    message: "URL Service unavailable",
+                });
+            }
+            return res.status(ownershipRes.status).json({
+                success: false,
+                message: "Ownership verification failed",
+            });
+        }
+
         // Total clicks across all time
         const totalClicks = await ClickEvent.countDocuments({
             shortCode,

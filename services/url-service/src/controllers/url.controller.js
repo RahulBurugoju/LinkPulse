@@ -74,9 +74,37 @@ const deleteUrl = asyncHandler(async (req, res) => {
     });
 });
 
+const checkOwnership = asyncHandler(async (req, res) => {
+    const { shortCode } = req.params;
+    const userId = req.user.id || req.user.Id;
+
+    const url = await urlService.getUrlByIdAndOwner({
+        urlId: shortCode,
+        userId,
+    });
+
+    if (!url) {
+        return res.status(404).json({
+            success: false,
+            message: "URL not found",
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "URL ownership verified",
+        data: {
+            shortCode: url.shortCode,
+            userId: url.userId,
+            originalUrl: url.originalUrl,
+        },
+    });
+});
+
 export default {
     createShortUrl,
     getUrl,
     updateUrl,
     deleteUrl,
+    checkOwnership,
 };

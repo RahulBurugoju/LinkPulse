@@ -7,6 +7,9 @@ const router = Router();
 router.route("/")
     .post(authenticateToken, urlController.createShortUrl);
 
+router.route("/ownership/:shortCode")
+    .get(authenticateToken, urlController.checkOwnership);
+
 router.route("/:urlId")
     .get(authenticateToken, urlController.getUrl)
     .patch(authenticateToken, urlController.updateUrl)
