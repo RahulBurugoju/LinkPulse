@@ -3,9 +3,20 @@ import mongoose from "mongoose";
 import Url from "../models/url.model.js";
 import { ApiError } from "../util/ApiError.js";
 
+const ALPHANUMERIC_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+function generateShortCode() {
+    const bytes = crypto.randomBytes(8);
+    let code = "";
+    for (let i = 0; i < 8; i++) {
+        code += ALPHANUMERIC_CHARS[bytes[i] % ALPHANUMERIC_CHARS.length];
+    }
+    return code;
+}
+
 async function createShortUrl({ originalUrl, userId }) {
     for (let attempt = 0; attempt < 3; attempt++) {
-        const shortCode = crypto.randomBytes(6).toString("base64url").slice(0, 8);
+        const shortCode = generateShortCode();
 
         try {
             const url = await Url.create({

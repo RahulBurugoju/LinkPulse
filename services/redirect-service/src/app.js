@@ -9,6 +9,8 @@ import logger from "./config/logger.js";
 import redirectRouter from "./routes/redirect.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import { redisClient } from "./config/redis.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
 
 const app = express();
 
@@ -59,6 +61,12 @@ app.get("/ready", (req, res) => {
             redis: redisReady ? "connected" : "degraded",
         },
     });
+});
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/api-docs.json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(swaggerSpec);
 });
 
 app.use("/", redirectRouter);
