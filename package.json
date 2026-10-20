@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:gateway": "npm --prefix ./services/api-gateway start",
+    "start:user": "npm --prefix ./services/user-service start",
+    "start:url": "npm --prefix ./services/url-service start",
+    "start:redirect": "npm --prefix ./services/redirect-service start",
+    "start:analytics": "npm --prefix ./services/analytics-service start"
   },
   "keywords": [],
   "author": "",
