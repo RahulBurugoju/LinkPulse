@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./config/env.js";
 import { connectDatabase } from "./config/db.js";
 import ClickEvent from "./models/click-event.model.js";
 import { consumer } from "./config/kafka.js";
