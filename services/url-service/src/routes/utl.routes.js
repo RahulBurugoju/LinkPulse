@@ -1,14 +1,15 @@
 import { Router } from "express";
-
 import { authenticateToken } from "../middlewares/auth.middleware.js";
 import urlController from "../controllers/url.controller.js";
 
 const router = Router();
 
 router.route("/")
-    .get((req, res) => {
-        res.send("hello")
-    })
     .post(authenticateToken, urlController.createShortUrl);
+
+router.route("/:urlId")
+    .get(authenticateToken, urlController.getUrl)
+    .patch(authenticateToken, urlController.updateUrl)
+    .delete(authenticateToken, urlController.deleteUrl);
 
 export default router;

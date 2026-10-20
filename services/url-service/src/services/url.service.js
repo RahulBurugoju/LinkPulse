@@ -1,10 +1,7 @@
 import crypto from "node:crypto";
+import mongoose from "mongoose";
 import Url from "../models/url.model.js";
 import { ApiError } from "../util/ApiError.js";
-import { deflate } from "node:zlib";
-
-
-
 
 async function createShortUrl({ originalUrl, userId }) {
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -36,7 +33,41 @@ async function createShortUrl({ originalUrl, userId }) {
     throw new ApiError(503, "Could not generate a unique short code");
 }
 
+function getQuery(urlId, userId) {
+    return mongoose.Types.ObjectId.isValid(urlId)
+        ? { _id: urlId, userId }
+        : { shortCode: urlId, userId };
+}
 
+async function getUrlByIdAndOwner({ urlId, userId }) {
+    const query = getQuery(urlId, userId);
+    return await Url.findOne(query);
+}
 
+async function updateUrlByIdAndOwner({ urlId, userId, originalUrl }) {
+    const query = getQuery(urlId, userId);
+    return await Url.findOneAndUpdate(
+        query,
+        {
+            $set: {
+                originalUrl,
+            },
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+}
 
-export default { createShortUrl };
+async function deleteUrlByIdAndOwner({ urlId, userId }) {
+    const query = getQuery(urlId, userId);
+    return await Url.findOneAndDelete(query);
+}
+
+export default {
+    createShortUrl,
+    getUrlByIdAndOwner,
+    updateUrlByIdAndOwner,
+    deleteUrlByIdAndOwner,
+};
