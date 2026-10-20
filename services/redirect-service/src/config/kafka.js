@@ -1,5 +1,6 @@
 import { Kafka } from "kafkajs";
 import { randomUUID } from "crypto";
+import logger from "./logger.js";
 
 
 //create kafka-client-configuration
@@ -24,10 +25,10 @@ async function connectProducer() {
         connectionPromise = producer.connect()
             .then(() => {
                 isConnected = true;
-                console.log("Kafka producer connected")
+                logger.info("Kafka producer connected");
             })
             .catch((error) => {
-                console.error("Kafka producer connection failed", error.message);
+                logger.error({ err: error.message }, "Kafka producer connection failed");
                 connectionPromise = null;
                 throw error;
             }).finally(() => {
