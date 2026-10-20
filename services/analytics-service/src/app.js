@@ -39,6 +39,7 @@ app.get("/ready", (req, res) => {
     });
 });
 
+app.use("/api/analytics", analyticsRouter);
 app.use("/api/v1/analytics", analyticsRouter);
 
 // Global Error Handler

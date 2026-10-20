@@ -33,6 +33,11 @@ const clickEventSchema = new mongoose.Schema(
     }
 );
 
+clickEventSchema.index({
+    shortCode: 1,
+    timestamp: 1,
+});
+
 const ClickEvent = mongoose.model("ClickEvent", clickEventSchema);
 
 export { clickEventSchema };

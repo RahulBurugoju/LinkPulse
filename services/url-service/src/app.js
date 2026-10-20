@@ -40,6 +40,7 @@ app.get("/ready", (req, res) => {
     });
 });
 
+app.use("/api/urls", urlRouter);
 app.use("/api/v1/url", urlRouter);
 
 // Global Error Handler

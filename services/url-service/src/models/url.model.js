@@ -6,6 +6,7 @@ const urlSchema = new mongoose.Schema(
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
+            immutable: true,
             index: true,
         },
 

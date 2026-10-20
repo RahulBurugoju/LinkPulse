@@ -22,6 +22,7 @@ async function createShortUrl({ originalUrl, userId }) {
                 originalUrl: url.originalUrl,
                 shortCode: url.shortCode,
                 shortUrl: `http://localhost:3003/${url.shortCode}`,
+                userId: url.userId,
             };
         } catch (error) {
             if (error.code === 11000 && error.keyPattern?.shortCode) {
