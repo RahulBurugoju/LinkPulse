@@ -1,5 +1,6 @@
 import RedirectUrl from "../models/redirectUrl.model.js";
 import { ApiError } from "../util/ApiError.js";
+import logger from "../config/logger.js";
 
 /**
  * Looks up the original URL for a given shortCode.
@@ -11,6 +12,7 @@ const getOriginalUrl = async (shortCode) => {
         .lean();
 
     if (!url) {
+        logger.warn({ shortCode }, "Short URL not found");
         throw new ApiError(404, "Short URL not found");
     }
 

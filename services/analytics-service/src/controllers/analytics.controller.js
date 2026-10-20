@@ -1,4 +1,5 @@
 import ClickEvent from "../models/click-event.model.js";
+import logger from "../config/logger.js";
 
 async function getUrlAnalytics(req, res) {
     try {
@@ -23,7 +24,7 @@ async function getUrlAnalytics(req, res) {
                 signal: AbortSignal.timeout(3000),
             });
         } catch (err) {
-            console.error("URL Service unavailable:", err.message);
+            logger.error({ err: err.message, shortCode }, "URL Service unavailable during ownership verification");
             return res.status(503).json({
                 success: false,
                 message: "URL Service unavailable",
@@ -31,6 +32,7 @@ async function getUrlAnalytics(req, res) {
         }
 
         if (ownershipRes.status === 404) {
+            logger.warn({ shortCode }, "Ownership verification failed: URL not found or not owned");
             return res.status(404).json({
                 success: false,
                 message: "URL not found",
@@ -39,11 +41,13 @@ async function getUrlAnalytics(req, res) {
 
         if (!ownershipRes.ok) {
             if (ownershipRes.status >= 500) {
+                logger.error({ shortCode, status: ownershipRes.status }, "URL Service error during ownership verification");
                 return res.status(503).json({
                     success: false,
                     message: "URL Service unavailable",
                 });
             }
+            logger.warn({ shortCode, status: ownershipRes.status }, "Ownership verification failed");
             return res.status(ownershipRes.status).json({
                 success: false,
                 message: "Ownership verification failed",
@@ -100,7 +104,7 @@ async function getUrlAnalytics(req, res) {
             },
         });
     } catch (error) {
-        console.error("Analytics query failed:", error.message);
+        logger.error({ err: error.message, shortCode: req.params.shortCode }, "Analytics query failed");
 
         return res.status(500).json({
             success: false,

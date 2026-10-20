@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "./logger.js";
 
 async function connectDatabase() {
     const uri = process.env.MONGODB_URI;
@@ -7,9 +8,9 @@ async function connectDatabase() {
         throw new Error("MONGODB_URI is not configured");
     }
 
-    await mongoose.connect(uri);
+    const conn = await mongoose.connect(uri);
 
-    console.log("Analytics Service connected to MongoDB");
+    logger.info({ host: conn.connection.host }, "MongoDB connected");
 }
 
 export { connectDatabase, connectDatabase as connectDB };

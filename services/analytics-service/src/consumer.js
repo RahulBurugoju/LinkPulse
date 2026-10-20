@@ -2,6 +2,7 @@ import "dotenv/config";
 import { connectDatabase } from "./config/db.js";
 import ClickEvent from "./models/click-event.model.js";
 import { consumer } from "./config/kafka.js";
+import logger from "./config/logger.js";
 
 async function startConsumer() {
     await consumer.connect();
@@ -11,7 +12,7 @@ async function startConsumer() {
         fromBeginning: true,
     });
 
-    console.log("Analytics consumer is listening for click events");
+    logger.info("Analytics consumer is listening for click events");
 
     await consumer.run({
         eachMessage: async ({ message }) => {
@@ -26,7 +27,7 @@ async function startConsumer() {
                     typeof event.timestamp !== "string" ||
                     Number.isNaN(Date.parse(event.timestamp))
                 ) {
-                    console.error("Invalid click event received");
+                    logger.warn({ eventId: event?.eventId }, "Invalid click event received");
                     return;
                 }
 
@@ -44,9 +45,9 @@ async function startConsumer() {
                     { upsert: true }
                 );
 
-                console.log("Click event persisted:", event.eventId);
+                logger.info({ eventId: event.eventId, shortCode: event.shortCode }, "Click event persisted");
             } catch (error) {
-                console.error("Failed to persist click event:", error.message);
+                logger.error({ err: error.message }, "Failed to persist click event");
 
                 // Rethrow database errors so KafkaJS can report processing failure.
                 // We will add explicit retry/recovery handling in a later hardening step.
@@ -64,6 +65,6 @@ async function main() {
 }
 
 main().catch((error) => {
-    console.error("Analytics Service failed to start:", error);
+    logger.error({ err: error }, "Analytics Service failed to start");
     process.exitCode = 1;
 });

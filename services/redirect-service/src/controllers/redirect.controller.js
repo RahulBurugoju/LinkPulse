@@ -4,6 +4,7 @@ import { ApiError } from "../util/ApiError.js";
 import redirectServices from "../services/redirect.services.js";
 import { redisClient } from "../config/redis.js";
 import publishClickEvent from "../config/kafka.js";
+import logger from "../config/logger.js";
 
 const SHORT_CODE_REGEX = /^[a-zA-Z0-9]{8}$/;
 const CACHE_TTL_SECONDS = 60 * 60;
@@ -26,7 +27,7 @@ const redirectToOriginalUrl = asyncHandler(async (req, res) => {
         try {
             originalUrl = await redisClient.get(cacheKey);
         } catch (error) {
-            console.error(`Redis cache miss for ${cacheKey}:`, error.message);
+            logger.warn({ cacheKey, err: error.message }, "Redis cache read failed");
         }
     }
 
@@ -37,7 +38,7 @@ const redirectToOriginalUrl = asyncHandler(async (req, res) => {
             try {
                 await redisClient.set(cacheKey, originalUrl, "EX", CACHE_TTL_SECONDS);
             } catch (error) {
-                console.error("Redis write failed:", error.message);
+                logger.warn({ cacheKey, err: error.message }, "Redis write failed");
             }
         }
     }
@@ -62,7 +63,7 @@ const redirectToOriginalUrl = asyncHandler(async (req, res) => {
         shortCode,
         req,
     }).catch((error) => {
-        console.error("Failed to publish click event:", error.message);
+        logger.error({ shortCode, err: error.message }, "Kafka event publishing failed");
     });
     return res.redirect(302, destination.toString());
 });

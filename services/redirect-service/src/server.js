@@ -1,6 +1,7 @@
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import { connectRedis, disconnectRedis } from "./config/redis.js";
+import logger from "./config/logger.js";
 
 const PORT = process.env.PORT || 3003;
 const SERVICE_NAME = process.env.SERVICE_NAME || "redirect-service";
@@ -12,13 +13,13 @@ const startServer = async () => {
         try {
             await connectRedis();
         } catch (redisError) {
-            console.warn("Redis connection failed, running without cache:", redisError.message);
+            logger.warn({ err: redisError.message }, "Redis connection failed, running without cache");
         }
         app.listen(PORT, () => {
-            console.log(`${SERVICE_NAME} is running on port ${PORT}`);
+            logger.info({ port: PORT, serviceName: SERVICE_NAME }, "Redirect Service started");
         });
     } catch (error) {
-        console.error("Failed to start server:", error.message);
+        logger.error({ err: error }, "Failed to start server");
         process.exit(1);
     }
 };

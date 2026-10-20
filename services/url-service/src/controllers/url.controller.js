@@ -1,12 +1,15 @@
 import { asyncHandler } from "../util/asyncHandler.js";
 import { ApiResponse } from "../util/ApiResponse.js";
 import urlService from "../services/url.service.js";
+import logger from "../config/logger.js";
 
 const createShortUrl = asyncHandler(async (req, res) => {
     const { originalUrl } = req.body;
     const userId = req.user.id || req.user.Id;
 
     const url = await urlService.createShortUrl({ originalUrl, userId });
+
+    logger.info({ shortCode: url.shortCode }, "URL created");
 
     res.status(201).json(new ApiResponse(201, { url }, "URL created successfully"));
 });
@@ -42,6 +45,7 @@ const updateUrl = asyncHandler(async (req, res) => {
     });
 
     if (!url) {
+        logger.warn({ urlId: req.params.urlId, userId }, "URL update failed: not found or unauthorized");
         return res.status(404).json({
             success: false,
             message: "URL not found",
@@ -62,6 +66,7 @@ const deleteUrl = asyncHandler(async (req, res) => {
     });
 
     if (!url) {
+        logger.warn({ urlId: req.params.urlId, userId }, "URL delete failed: not found or unauthorized");
         return res.status(404).json({
             success: false,
             message: "URL not found",
@@ -84,6 +89,7 @@ const checkOwnership = asyncHandler(async (req, res) => {
     });
 
     if (!url) {
+        logger.warn({ shortCode, userId }, "URL ownership check failed: not found or unauthorized");
         return res.status(404).json({
             success: false,
             message: "URL not found",
