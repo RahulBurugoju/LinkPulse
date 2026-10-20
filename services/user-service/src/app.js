@@ -32,26 +32,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3001;
-const SERVICE_NAME = process.env.SERVICE_NAME;
+const SERVICE_NAME = process.env.SERVICE_NAME || "user-service";
 
+const isMongoReady = () => mongoose.connection.readyState === 1;
 
 app.get("/health", (req, res) => {
     res.status(200).json({
         status: "ok",
-        service: SERVICE_NAME,
-        timestamp: new Date().toISOString()
+        service: process.env.SERVICE_NAME || "user-service",
     });
 });
 
 app.get("/ready", (req, res) => {
-    const databaseReady = mongoose.connection.readyState === 1;
+    const ready = isMongoReady();
 
-    res.status(databaseReady ? 200 : 503).json({
-        status: databaseReady ? "ready" : "not_ready",
-        service: SERVICE_NAME,
+    res.status(ready ? 200 : 503).json({
+        status: ready ? "ready" : "not_ready",
+        service: process.env.SERVICE_NAME || "user-service",
+        checks: {
+            mongodb: ready ? "up" : "down",
+        },
         dependencies: {
-            mongodb: databaseReady ? "connected" : "disconnected"
-        }
+            mongodb: ready ? "connected" : "disconnected",
+        },
     });
 });
 
